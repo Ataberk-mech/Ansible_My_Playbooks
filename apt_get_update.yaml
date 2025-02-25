@@ -1,0 +1,13 @@
+---
+- name: Update APT package list
+  hosts: all
+  become: yes
+  tasks:
+    - name: Run apt-get for update
+      apt:
+        update_cache: yes
+      register: update_output
+
+    - name: Debug apt-get update output
+      debug:
+        var: update_output
