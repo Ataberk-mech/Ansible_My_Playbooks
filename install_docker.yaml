@@ -1,0 +1,59 @@
+---
+- name: Install Docker
+  hosts: localhost
+  become: yes
+
+  tasks:
+    - name: Ensure apt package list is up to date
+      apt:
+        update_cache: yes
+
+    - name: Install required system packages
+      ansible.builtin.apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - software-properties-common
+        state: present
+
+    - name: Add Docker GPG key
+      ansible.builtin.apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Add Docker repository
+      ansible.builtin.apt_repository:
+        repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
+        state: present
+
+    - name: Install Docker
+      ansible.builtin.apt:
+        name: docker-ce
+        state: present
+
+    - name: Install Docker-cli
+      ansible.builtin.apt:
+        name: docker-ce-cli
+        state: present
+
+    - name: Install containerd
+      ansible.builtin.apt:
+        name: containerd.io
+        state: present    
+
+    - name: Ensure Docker service is running
+      ansible.builtin.service:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Ensure Containerd service is running
+      ansible.builtin.service:
+        name: containerd
+        state: started
+        enabled: yes
+
+    - name: Print feedback message
+      ansible.builtin.debug:
+        msg: "Docker installation and service setup completed successfully!"
